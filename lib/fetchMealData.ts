@@ -20,7 +20,7 @@ https://open.neis.go.kr/hub/mealServiceDietInfo
 &pSize=3
 &ATPT_OFCDC_SC_CODE=${process.env.NEIS_ATPT_OFCDC_SC_CODE}
 &SD_SCHUL_CODE=${process.env.NEIS_SD_SCHUL_CODE}
-&MLSV_YMD=20240401
+&MLSV_YMD=${formattedDate}
 `);
 
   const data = await response.json();
