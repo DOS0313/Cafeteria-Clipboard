@@ -1,15 +1,8 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-export async function fetchMealData() {
-  const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1); // 내일 날짜로 설정 (인스타 자동화용이라서)
-
-  const year = tomorrow.getFullYear();
-  const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
-  const day = String(tomorrow.getDate()).padStart(2, '0');
-  const formattedDate = `${year}${month}${day}`;
+export async function fetchMealData( formattedDate: string ) {
+  
 
   // NEIS OPEN API
   const response = await fetch(`
@@ -22,6 +15,8 @@ https://open.neis.go.kr/hub/mealServiceDietInfo
 &SD_SCHUL_CODE=${process.env.NEIS_SD_SCHUL_CODE}
 &MLSV_YMD=${formattedDate}
 `);
+
+  console.log(formattedDate);
 
   const data = await response.json();
 

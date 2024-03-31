@@ -5,14 +5,23 @@ import ClickableDiv from './ClickableDiv';
 import { MealData } from './types';
 
 export default async function Home() {
-  const mealData: MealData[] = await fetchMealData();
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1); // 내일 날짜로 설정 (인스타 자동화용이라서)
+
+  const year = tomorrow.getFullYear();
+  const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+  const day = String(tomorrow.getDate()).padStart(2, '0');
+  const formattedDate = `${year}${month}${day}`;
+
+  const mealData: MealData[] = await fetchMealData(formattedDate);
 
   return (
     <div className="flex flex-col items-center space-y-4">
       <div className="mt-10 text-4xl font-bold">내일의 급식</div>
+      <div>데이터 기준 : {formattedDate}</div>
       {mealData.length > 0 ? (
         <>
-          <div>데이터 기준 : {mealData[0].MLSV_YMD}</div>
           <ClickableDiv mealData={mealData}>
             {mealData.map((meal, index) => (
               <div key={index}>
