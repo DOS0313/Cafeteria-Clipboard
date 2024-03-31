@@ -16,8 +16,6 @@ https://open.neis.go.kr/hub/mealServiceDietInfo
 &MLSV_YMD=${formattedDate}
 `);
 
-  console.log(formattedDate);
-
   const data = await response.json();
 
   // 데이터가 있는지 확인
