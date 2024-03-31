@@ -48,7 +48,7 @@ export default async function Home() {
       <Link href="https://github.com/DOS0313" target='_blank' className='text-slate-500'>
         Developed by DOS0313
       </Link>
-      <div className='text-sm text-slate-500'>해당 사이트는 광양고등학교 학생회 Instagram 스토리 업로드 자동화를 도우기 위해 제작되었습니다.</div>
+      <div className='text-center m-2 text-sm text-slate-500'>해당 사이트는 광양고등학교 학생회 Instagram 스토리 업로드 자동화를 도우기 위해 제작되었습니다.</div>
     </div>
   );
 }
