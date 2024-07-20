@@ -103,13 +103,22 @@ export default function Renew() {
           />
           <Button text="클립보드에 저장" type="stroke" onClick={handleCopy} />
         </div>
-        <Link
-          href="https://github.com/DOS0313"
-          target="_blank"
-          className="text-gray-500 mt-8"
-        >
-          Developed by DOS0313
-        </Link>
+        <div className="flex flex-row space-x-2">
+          <Link
+            href="https://github.com/DOS0313"
+            target="_blank"
+            className="text-gray-500 mt-8"
+          >
+            Developed by DOS0313 |
+          </Link>
+          <Link
+            href="https://vercel.com"
+            target="_blank"
+            className="text-gray-500 mt-8"
+          >
+            Powered by Vercel
+          </Link>
+        </div>
       </main>
     </div>
   );
