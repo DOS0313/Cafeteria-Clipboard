@@ -1,54 +1,116 @@
-import Link from 'next/link';
+"use client";
 
-import { fetchMealData } from "@/lib/fetchMealData";
-import ClickableDiv from './ClickableDiv';
-import { MealData } from './types';
+import { useRef, useState } from "react";
+import html2canvas from "html2canvas";
+import Link from "next/link";
 
-export default async function Home() {
+import { fetchMealData } from "@/app/_lib/fetchMealData";
+import Button from "./_components/Button/Button";
+import MealInfo from "./_components/MealInfo/MealInfo";
+import { MealData } from "./_types/types";
+
+export default function Renew() {
+  const mealInfoRef = useRef<HTMLDivElement>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
+
   const today = new Date();
   const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1); // 내일 날짜로 설정 (인스타 자동화용이라서)
+  tomorrow.setDate(today.getDate() + 1);
 
   const year = tomorrow.getFullYear();
-  const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
-  const day = String(tomorrow.getDate()).padStart(2, '0');
+  const month = String(tomorrow.getMonth() + 1).padStart(2, "0");
+  const day = String(tomorrow.getDate()).padStart(2, "0");
   const formattedDate = `${year}${month}${day}`;
 
-  const mealData: MealData[] = await fetchMealData(formattedDate);
+  const [mealData, setMealData] = useState<MealData[]>([]);
+
+  useState(() => {
+    fetchMealData(formattedDate).then(setMealData);
+  });
+
+  const handleDownload = async () => {
+    if (mealInfoRef.current) {
+      setIsDownloading(true);
+      try {
+        const element = mealInfoRef.current;
+        const originalStyle = element.style.cssText;
+
+        // 스크롤 제거 및 전체 내용 표시
+        element.style.cssText = `
+          ${originalStyle}
+          max-height: none !important;
+          overflow: visible !important;
+        `;
+
+        const canvas = await html2canvas(element, {
+          scale: 3,
+          windowWidth: element.scrollWidth,
+          windowHeight: element.scrollHeight,
+        });
+
+        // 원래 스타일로 복원
+        element.style.cssText = originalStyle;
+
+        const image = canvas.toDataURL("image/png", 1.0);
+        const link = document.createElement("a");
+        link.download = "급식정보.png";
+        link.href = image;
+        link.click();
+      } catch (error) {
+        console.error("이미지 생성 중 오류 발생:", error);
+        alert("이미지 생성 중 오류가 발생했습니다.");
+      } finally {
+        setIsDownloading(false);
+      }
+    }
+  };
+
+  const handleCopy = () => {
+    if (mealData.length > 0) {
+      const textToCopy = mealData
+        .map(
+          (meal) =>
+            `[${meal.MMEAL_SC_NM}]\n${meal.DDISH_NM.replace(/<br\/>/g, "\n")}`
+        )
+        .join("\n\n");
+
+      navigator.clipboard
+        .writeText(textToCopy)
+        .then(() => alert("클립보드에 복사되었습니다."))
+        .catch((err) => {
+          console.error("클립보드 복사 중 오류 발생:", err);
+          alert("클립보드 복사 중 오류가 발생했습니다.");
+        });
+    } else {
+      alert("복사할 급식 데이터가 없습니다.");
+    }
+  };
 
   return (
-    <div className="flex flex-col items-center space-y-4">
-      <div className="mt-10 text-4xl font-bold">내일의 급식</div>
-      <div>데이터 기준 : {formattedDate}</div>
-      {mealData.length > 0 ? (
-        <>
-          <ClickableDiv mealData={mealData}>
-            {mealData.map((meal, index) => (
-              <div key={index}>
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: `[${meal.MMEAL_SC_NM}]`.replace(/\s/g, "&nbsp;"),
-                  }}
-                />
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: meal.DDISH_NM.replace(/\s/g, "&nbsp;"),
-                  }}
-                />
-                {index < mealData.length - 1 && (
-                  <div dangerouslySetInnerHTML={{ __html: "&nbsp;<br/>" }} />
-                )}
-              </div>
-            ))}
-          </ClickableDiv>
-        </>
-      ) : (
-        <div>급식 데이터가 없습니다.</div>
-      )}
-      <Link href="https://github.com/DOS0313" target='_blank' className='text-slate-500'>
-        Developed by DOS0313
-      </Link>
-      <div className='text-center m-2 text-sm text-slate-500'>해당 사이트는 광양고등학교 학생회 Instagram 스토리 업로드 자동화를 도우기 위해 제작되었습니다.</div>
+    <div className="flex justify-center items-center min-h-screen p-4">
+      <main className="flex-col justify-center items-center gap-2.5 inline-flex w-full max-w-md">
+        <MealInfo
+          ref={mealInfoRef}
+          isDownloading={isDownloading}
+          mealData={mealData}
+          formattedDate={formattedDate}
+        />
+        <div className="w-full space-y-2">
+          <Button
+            text="이미지 다운로드"
+            type="solid"
+            onClick={handleDownload}
+          />
+          <Button text="클립보드에 저장" type="stroke" onClick={handleCopy} />
+        </div>
+        <Link
+          href="https://github.com/DOS0313"
+          target="_blank"
+          className="text-gray-500 mt-8"
+        >
+          Developed by DOS0313
+        </Link>
+      </main>
     </div>
   );
 }
