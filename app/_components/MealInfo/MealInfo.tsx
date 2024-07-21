@@ -21,13 +21,13 @@ const MealInfo = forwardRef<HTMLDivElement, MealInfoProps>(
     };
 
     const getMealEmoji = (mealType: string) => {
-      switch (mealType) {
+      switch (mealType.replace(/[\[\]]/g, "").trim()) {
         case "조식":
           return "☀️";
         case "중식":
-          return "🍱";
+          return "🌞";
         case "석식":
-          return "🌃";
+          return "🌙";
         default:
           return "";
       }
@@ -36,27 +36,30 @@ const MealInfo = forwardRef<HTMLDivElement, MealInfoProps>(
     return (
       <div
         ref={ref}
-        className={`w-full overflow-y-auto ${
-          isDownloading ? "" : "max-h-[calc(100vh-8rem)]"
-        } mb-2 border-solid border border-gray-300 p-4 bg-white rounded-lg`}
+        className={`w-full ${
+          isDownloading ? "h-full" : "max-h-[calc(100vh-8rem)]"
+        } overflow-y-auto mb-2 border-solid border border-gray-300 p-4 bg-white rounded-lg flex flex-col`}
+        style={
+          isDownloading ? { minHeight: "600px", aspectRatio: "9 / 16" } : {}
+        }
       >
         <p className="font-bold text-xl mb-4">{displayDate()} 급식 🍚</p>
         {isLoading ? (
           <Skeleton />
         ) : mealData.length > 0 ? (
-          <p className="whitespace-pre-line leading-5 mb-4">
+          <div className="flex-grow flex flex-col justify-start">
             {mealData.map((meal, index) => (
-              <React.Fragment key={index}>
-                <strong>
-                  {getMealEmoji(meal.MMEAL_SC_NM)} {meal.MMEAL_SC_NM}
-                  <br />
+              <div key={index} className="mb-6">
+                <strong className="text-lg block mb-2">
+                  {getMealEmoji(meal.MMEAL_SC_NM)}{" "}
+                  {meal.MMEAL_SC_NM.replace(/[\[\]]/g, "")}
                 </strong>
-                {meal.DDISH_NM.split("<br/>").join("\n")}
-                {index < mealData.length - 1 && <br />}
-                <br />
-              </React.Fragment>
+                <p className="whitespace-pre-line">
+                  {meal.DDISH_NM.split("<br/>").join("\n")}
+                </p>
+              </div>
             ))}
-          </p>
+          </div>
         ) : (
           <p>급식 데이터가 없습니다.</p>
         )}

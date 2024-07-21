@@ -38,17 +38,30 @@ export default function Renew() {
         const element = mealInfoRef.current;
         const originalStyle = element.style.cssText;
 
+        // 화면 크기에 맞춰 동적으로 높이 설정
+        const screenHeight = window.innerHeight;
+        const height = Math.min(screenHeight * 0.9, 1920); // 최대 높이 1920px로 제한
+        const width = (height * 9) / 16;
+
         // 스크롤 제거 및 전체 내용 표시
         element.style.cssText = `
           ${originalStyle}
+          width: ${width}px !important;
+          height: ${height}px !important;
           max-height: none !important;
-          overflow: visible !important;
+          overflow: hidden !important;
+          display: flex !important;
+          flex-direction: column !important;
+          justify-content: flex-start !important;
+          align-items: stretch !important;
+          padding: 20px !important;
+          box-sizing: border-box !important;
         `;
 
         const canvas = await html2canvas(element, {
-          scale: 3,
-          windowWidth: element.scrollWidth,
-          windowHeight: element.scrollHeight,
+          width: width,
+          height: height,
+          scale: 3, // 해상도를 높이기 위해 스케일 조정
         });
 
         // 원래 스타일로 복원
