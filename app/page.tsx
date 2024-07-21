@@ -71,10 +71,25 @@ export default function Renew() {
   const handleCopy = () => {
     if (mealData.length > 0) {
       const textToCopy = mealData
-        .map(
-          (meal) =>
-            `[${meal.MMEAL_SC_NM}]\n${meal.DDISH_NM.replace(/<br\/>/g, "\n")}`
-        )
+        .map((meal) => {
+          const mealType = meal.MMEAL_SC_NM.replace(/[\[\]]/g, "").trim();
+          let emoji = "";
+          switch (mealType) {
+            case "조식":
+              emoji = "☀️ ";
+              break;
+            case "중식":
+              emoji = "🌞 ";
+              break;
+            case "석식":
+              emoji = "🌙 ";
+              break;
+          }
+          return `${emoji}${mealType}\n${meal.DDISH_NM.replace(
+            /<br\/>/g,
+            "\n"
+          )}`;
+        })
         .join("\n\n");
 
       navigator.clipboard

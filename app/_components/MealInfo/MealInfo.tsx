@@ -20,6 +20,19 @@ const MealInfo = forwardRef<HTMLDivElement, MealInfoProps>(
       return `${date.getMonth() + 1}/${date.getDate()}`;
     };
 
+    const getMealEmoji = (mealType: string) => {
+      switch (mealType) {
+        case "조식":
+          return "☀️";
+        case "중식":
+          return "🍱";
+        case "석식":
+          return "🌃";
+        default:
+          return "";
+      }
+    };
+
     return (
       <div
         ref={ref}
@@ -35,7 +48,7 @@ const MealInfo = forwardRef<HTMLDivElement, MealInfoProps>(
             {mealData.map((meal, index) => (
               <React.Fragment key={index}>
                 <strong>
-                  {meal.MMEAL_SC_NM}
+                  {getMealEmoji(meal.MMEAL_SC_NM)} {meal.MMEAL_SC_NM}
                   <br />
                 </strong>
                 {meal.DDISH_NM.split("<br/>").join("\n")}
