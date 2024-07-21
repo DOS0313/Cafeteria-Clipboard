@@ -12,6 +12,8 @@ import { MealData } from "./_types/types";
 export default function Renew() {
   const mealInfoRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [mealData, setMealData] = useState<MealData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const today = new Date();
   const tomorrow = new Date(today);
@@ -95,6 +97,7 @@ export default function Renew() {
           isDownloading={isDownloading}
           mealData={mealData}
           formattedDate={formattedDate}
+          isLoading={isLoading}
         />
         <div className="w-full space-y-2">
           <Button

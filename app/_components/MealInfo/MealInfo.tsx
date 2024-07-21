@@ -1,14 +1,16 @@
 import React, { forwardRef } from "react";
 import { MealData } from "../../_types/types";
+import Skeleton from "../Skeleton/Skeleton";
 
 interface MealInfoProps {
   isDownloading: boolean;
   mealData: MealData[];
   formattedDate: string;
+  isLoading: boolean;
 }
 
 const MealInfo = forwardRef<HTMLDivElement, MealInfoProps>(
-  ({ isDownloading, mealData, formattedDate }, ref) => {
+  ({ isDownloading, mealData, formattedDate, isLoading }, ref) => {
     const displayDate = () => {
       const date = new Date(
         parseInt(formattedDate.slice(0, 4)),
@@ -26,7 +28,9 @@ const MealInfo = forwardRef<HTMLDivElement, MealInfoProps>(
         } mb-2 border-solid border border-gray-300 p-4 bg-white rounded-lg`}
       >
         <p className="font-bold text-xl mb-4">{displayDate()} 급식 🍚</p>
-        {mealData.length > 0 ? (
+        {isLoading ? (
+          <Skeleton />
+        ) : mealData.length > 0 ? (
           <p className="whitespace-pre-line leading-5 mb-4">
             {mealData.map((meal, index) => (
               <React.Fragment key={index}>
