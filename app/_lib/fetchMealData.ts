@@ -1,29 +1,23 @@
-import dotenv from 'dotenv';
-dotenv.config();
+export async function fetchMealData(formattedDate: string) {
+  try {
+    const response = await fetch(`/api/mealData?date=${formattedDate}`);
 
-export async function fetchMealData( formattedDate: string ) {
-  
+    if (!response.ok) {
+      console.error("API 응답 에러:", response.status, response.statusText);
+      const text = await response.text();
+      console.error("응답 내용:", text);
+      throw new Error("API 요청 실패");
+    }
 
-  // NEIS OPEN API
-  const response = await fetch(`
-https://open.neis.go.kr/hub/mealServiceDietInfo
-?KEY=${process.env.NEIS_API_KEY}
-&Type=json
-&pIndex=1
-&pSize=3
-&ATPT_OFCDC_SC_CODE=${process.env.NEIS_ATPT_OFCDC_SC_CODE}
-&SD_SCHUL_CODE=${process.env.NEIS_SD_SCHUL_CODE}
-&MLSV_YMD=${formattedDate}
-`, { cache: 'no-store' });
+    const data = await response.json();
 
-  const data = await response.json();
-
-  // 데이터가 있는지 확인
-  if (data.mealServiceDietInfo && data.mealServiceDietInfo.length > 0) {
-    const rowData = data.mealServiceDietInfo[1].row;
-    return rowData;
-  } else {
-    // 데이터가 없는 경우 처리
+    if (data && data.length > 0) {
+      return data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error("데이터 페칭 중 에러 발생:", error);
     return [];
   }
 }

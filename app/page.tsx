@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import html2canvas from "html2canvas";
 import Link from "next/link";
 
@@ -22,11 +22,12 @@ export default function Renew() {
   const day = String(tomorrow.getDate()).padStart(2, "0");
   const formattedDate = `${year}${month}${day}`;
 
-  const [mealData, setMealData] = useState<MealData[]>([]);
-
-  useState(() => {
-    fetchMealData(formattedDate).then(setMealData);
-  });
+  useEffect(() => {
+    setIsLoading(true);
+    fetchMealData(formattedDate)
+      .then(setMealData)
+      .finally(() => setIsLoading(false));
+  }, [formattedDate]);
 
   const handleDownload = async () => {
     if (mealInfoRef.current) {
